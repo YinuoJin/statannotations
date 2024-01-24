@@ -174,11 +174,21 @@ class PValueFormat(Formatter):
     def format_data(self, result):
         if self.text_format == 'full':
             text = (f"{result.test_short_name} " if self.show_test_name
-                    else "")
+                    else "") 
 
-            return ("{}p = {}{}"
-                    .format('{}', self.pvalue_format_string, '{}')
-                    .format(text, result.pvalue, result.significance_suffix))
+
+            if len(self.pvalue_thresholds) == 0:
+                return ("{}p = {}{}"
+                        .format('{}', self.pvalue_format_string, '{}')
+                        .format(text, result.pvalue, result.significance_suffix))
+            else:
+                pval_thld, pval_thld_str = self.pvalue_thresholds[0]
+                if result.pvalue > pval_thld:
+                    return ("{}p = {}{}"
+                            .format('{}', self.pvalue_format_string, '{}')
+                            .format(text, result.pvalue, result.significance_suffix))
+                else:
+                    return ("{}p <= {}".format(text, pval_thld_str))
 
         elif self.text_format == 'star':
             was_list = False
